@@ -1373,8 +1373,8 @@ static NSString *const HKPluginKeyUUID = @"UUID";
 
                                                                               HKCategorySample *csample = (HKCategorySample *) sample;
                                                                               entry[HKPluginKeyValue] = @(csample.value);
-                                                                              entry[@"categoryType.identifier"] = csample.categoryType.identifier;
-                                                                              entry[@"categoryType.description"] = csample.categoryType.description;
+                                                                              entry[@"identifier"] = csample.categoryType.identifier;
+                                                                              entry[@"description"] = csample.categoryType.description;
 
                                                                           } else if ([sample isKindOfClass:[HKCorrelationType class]]) {
 
@@ -1384,6 +1384,7 @@ static NSString *const HKPluginKeyUUID = @"UUID";
                                                                           } else if ([sample isKindOfClass:[HKQuantitySample class]]) {
 
                                                                               HKQuantitySample *qsample = (HKQuantitySample *) sample;
+                                                                              entry[@"identifier"] = qsample.quantityType.identifier;
                                                                               [entry setValue:@([qsample.quantity doubleValueForUnit:unit]) forKey:@"quantity"];
 
                                                                           } else if ([sample isKindOfClass:[HKWorkout class]]) {
