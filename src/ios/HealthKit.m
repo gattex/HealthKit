@@ -277,17 +277,18 @@ static NSString *const HKPluginKeyUUID = @"UUID";
 
 //Helper to parse out a category sample from a dictionary and perform error checking
 - (HKCategorySample*) loadHKCategorySampleFromInputDictionary:(NSDictionary*) inputDictionary error:(NSError**) error {
+
+  if (![inputDictionary hasAllRequiredKeys:@[HKPluginKeyStartDate, HKPluginKeyEndDate, HKPluginKeySampleType, HKPluginKeyUnit, HKPluginKeyAmount] error:error]) {
+      return nil;
+  }
+
   //Load Category sample from args to command
-  if (![self inputDictionary:inputDictionary hasRequiredKey:HKPluginKeyStartDate error:error]) return nil;
   NSDate *startDate = [NSDate dateWithTimeIntervalSince1970:[[inputDictionary objectForKey:HKPluginKeyStartDate] longValue]];
 
-  if (![self inputDictionary:inputDictionary hasRequiredKey:HKPluginKeyEndDate error:error]) return nil;
   NSDate *endDate = [NSDate dateWithTimeIntervalSince1970:[[inputDictionary objectForKey:HKPluginKeyEndDate] longValue]];
 
-  if (![self inputDictionary:inputDictionary hasRequiredKey:HKPluginKeySampleType error:error]) return nil;
   NSString *sampleTypeString = [inputDictionary objectForKey:HKPluginKeySampleType];
 
-  if (![self inputDictionary:inputDictionary hasRequiredKey:HKPluginKeyAmount error:error]) return nil;
   double value = [[inputDictionary objectForKey:HKPluginKeyAmount] doubleValue];
 
   //Load optional metadata key
@@ -296,6 +297,22 @@ static NSString *const HKPluginKeyUUID = @"UUID";
     metadata = @{};
 
   return [self getHKCategorySampleWithStartDate:startDate endDate:endDate sampleTypeString:sampleTypeString value:value metadata:metadata error:error];
+}
+
+// Helper to handle the functionality with HealthKit to get a category sample
+- (HKCategorySample*) getHKCategorySampleWithStartDate:(NSDate*) startDate endDate:(NSDate*) endDate sampleTypeString:(NSString*) sampleTypeString value:(double) value metadata:(NSDictionary*) metadata error:(NSError**) error {
+  HKCategoryType *type = [self getHKCategoryType:sampleTypeString];
+  if (type==nil) {
+    *error = [NSError errorWithDomain:HKPluginError code:0 userInfo:@{NSLocalizedDescriptionKey:@"category type string was invalid"}];
+    return nil;
+  }
+
+    return [HKCategorySample categorySampleWithType:type value:value startDate:startDate endDate:endDate metadata:metadata];
+}
+
+- (HKCategoryType*) getHKCategoryType:(NSString*) elem {
+    HKCategoryType *type = [HKCategoryType categoryTypeForIdentifier:elem];
+    return type;
 }
 
 /**
