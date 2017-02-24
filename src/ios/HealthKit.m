@@ -278,7 +278,7 @@ static NSString *const HKPluginKeyUUID = @"UUID";
 //Helper to parse out a category sample from a dictionary and perform error checking
 - (HKCategorySample*) loadHKCategorySampleFromInputDictionary:(NSDictionary*) inputDictionary error:(NSError**) error {
 
-  if (![inputDictionary hasAllRequiredKeys:@[HKPluginKeyStartDate, HKPluginKeyEndDate, HKPluginKeySampleType, HKPluginKeyUnit, HKPluginKeyAmount] error:error]) {
+  if (![inputDictionary hasAllRequiredKeys:@[HKPluginKeyStartDate, HKPluginKeyEndDate, HKPluginKeySampleType, HKPluginKeyAmount] error:error]) {
       return nil;
   }
 
