@@ -253,9 +253,6 @@ static NSString *const HKPluginKeyUUID = @"UUID";
     NSString *sampleTypeString = inputDictionary[HKPluginKeySampleType];
     NSString *unitString = inputDictionary[HKPluginKeyUnit];
 
-    printf("HAHAHAHAHHAHAHA");
-    printf("%s", sampleTypeString);
-
     //Load optional metadata key
     NSDictionary *metadata = inputDictionary[HKPluginKeyMetadata];
     if (metadata == nil) {
