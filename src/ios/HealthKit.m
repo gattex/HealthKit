@@ -1663,6 +1663,12 @@ static NSString *const HKPluginKeyUUID = @"UUID";
     [[HealthKit sharedHealthStore] executeQuery:query];
 }
 
+/**
+ * Save category sample data
+ *
+ * @param command *CDVInvokedUrlCommand
+ */
+
 - (void) saveCategorySample:(CDVInvokedUrlCommand*)command {
   NSMutableDictionary *args = [command.arguments objectAtIndex:0];
 
