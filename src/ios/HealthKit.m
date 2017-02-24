@@ -268,6 +268,37 @@ static NSString *const HKPluginKeyUUID = @"UUID";
 }
 
 /**
+ * Parse out a category sample from a dictionary and perform error checking
+ *
+ * @param inputDictionary   *NSDictionary
+ * @param error             **NSError
+ * @return                  *HKCategorySample
+ */
+
+//Helper to parse out a category sample from a dictionary and perform error checking
+- (HKCategorySample*) loadHKCategorySampleFromInputDictionary:(NSDictionary*) inputDictionary error:(NSError**) error {
+  //Load Category sample from args to command
+  if (![self inputDictionary:inputDictionary hasRequiredKey:HKPluginKeyStartDate error:error]) return nil;
+  NSDate *startDate = [NSDate dateWithTimeIntervalSince1970:[[inputDictionary objectForKey:HKPluginKeyStartDate] longValue]];
+
+  if (![self inputDictionary:inputDictionary hasRequiredKey:HKPluginKeyEndDate error:error]) return nil;
+  NSDate *endDate = [NSDate dateWithTimeIntervalSince1970:[[inputDictionary objectForKey:HKPluginKeyEndDate] longValue]];
+
+  if (![self inputDictionary:inputDictionary hasRequiredKey:HKPluginKeySampleType error:error]) return nil;
+  NSString *sampleTypeString = [inputDictionary objectForKey:HKPluginKeySampleType];
+
+  if (![self inputDictionary:inputDictionary hasRequiredKey:HKPluginKeyAmount error:error]) return nil;
+  double value = [[inputDictionary objectForKey:HKPluginKeyAmount] doubleValue];
+
+  //Load optional metadata key
+  NSDictionary* metadata = [inputDictionary objectForKey:HKPluginKeyMetadata];
+  if (metadata == nil)
+    metadata = @{};
+
+  return [self getHKCategorySampleWithStartDate:startDate endDate:endDate sampleTypeString:sampleTypeString value:value metadata:metadata error:error];
+}
+
+/**
  * Parse out a correlation from a dictionary and perform error checking
  *
  * @param inputDictionary   *NSDictionary
@@ -1630,7 +1661,8 @@ static NSString *const HKPluginKeyUUID = @"UUID";
   }
 
   //Otherwise save to health store
-  [self.healthStore saveObject:sample withCompletion:^(BOOL success, NSError *error) {
+  [[HealthKit sharedHealthStore] saveObject:sample withCompletion:^(BOOL success, NSError *innerError) {
+  // [self.healthStore saveObject:sample withCompletion:^(BOOL success, NSError *error) {
     if (success) {
       dispatch_sync(dispatch_get_main_queue(), ^{
         CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
