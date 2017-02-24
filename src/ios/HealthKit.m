@@ -1615,6 +1615,37 @@ static NSString *const HKPluginKeyUUID = @"UUID";
     [[HealthKit sharedHealthStore] executeQuery:query];
 }
 
+- (void) saveCategorySample:(CDVInvokedUrlCommand*)command {
+  NSMutableDictionary *args = [command.arguments objectAtIndex:0];
+
+  //Use helper method to create Category sample
+  NSError* error = nil;
+  HKCategorySample *sample = [self loadHKCategorySampleFromInputDictionary:args error:&error];
+
+  //If error in creation, return plugin result
+  if (error) {
+    CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:[error localizedDescription]];
+    [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+    return;
+  }
+
+  //Otherwise save to health store
+  [self.healthStore saveObject:sample withCompletion:^(BOOL success, NSError *error) {
+    if (success) {
+      dispatch_sync(dispatch_get_main_queue(), ^{
+        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+      });
+    } else {
+      dispatch_sync(dispatch_get_main_queue(), ^{
+        CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:error.localizedDescription];
+        [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
+      });
+    }
+  }];
+
+}
+
 /**
  * Save quantity sample data
  *
