@@ -45,10 +45,10 @@
 
     <!-- Usage description of Health, mandatory since iOS 10 -->
     <config-file target="*-Info.plist" parent="NSHealthShareUsageDescription">
-      <string/>
+      <string>Every minute you meditate on Welzen will now sync with apple health.</string>
     </config-file>
     <config-file target="*-Info.plist" parent="NSHealthUpdateUsageDescription">
-      <string/>
+      <string>Every minute you meditate on Welzen will now sync with apple health.</string>
     </config-file>
 
     <config-file target="*/Entitlements-Debug.plist" parent="com.apple.developer.healthkit">
